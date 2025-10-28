@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ultimate Study Tools Hub: 100+ proxies, favorites, offline manga, PWA, export, dark mode">
+    <title>Study Tools Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/manifest+json,{
+        %22name%22:%22Study%20Tools%20Hub%22,
+        %22short_name%22:%22Tools%22,
+        %22start_url%22:%22.%22,
+        %22display%22:%22standalone%22,
+        %22background_color%22:%22%231a1a1a%22,
+        %22theme_color%22:%22%2366bb6a%22,
+        %22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%3C%2Ftext%3E%3C%2Fsvg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image%2Fsvg%22}]
+    }">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --accent-color: #4CAF50;
+            --accent-gradient: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, #fff));
+            --shadow-intensity: 0.1;
+            --font-size: 16px;
+            --border-radius: 12px;
+            --animation-speed: 0.3s;
+            --grid-columns: 3;
+        }
+        .theme-dark {
+            --bg-color: #1a1a1a;
+            --card-bg: #2c2c2c;
+            --text-color: #e0e0e0;
+            --accent-color: #66bb6a;
+            --accent-gradient: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, #000));
+        }
+        .theme-blue {
+            --bg-color: #e3f2fd;
+            --card-bg: #ffffff;
+            --text-color: #0d47a1;
+            --accent-color: #1976d2;
+            --accent-gradient: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, #fff));
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            font-size: var(--font-size);
+            transition: all var(--animation-speed) ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+        #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        header { text-align: center; background: var(--accent-gradient); color: #fff; padding: 25px; border-radius: var(--border-radius); margin-bottom: 25px; animation: fadeIn 0.5s ease-in-out; position: relative; z-index: 1; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .search-container { max-width: 600px; margin: 0 auto 20px; position: relative; z-index: 1; }
+        #search-input { width: 100%; padding: 12px 45px 12px 15px; font-size: 1em; border: none; border-radius: 50px; background: var(--card-bg); color: var(--text-color); box-shadow: 0 2px 8px rgba(0,0,0,var(--shadow-intensity)); transition: all var(--animation-speed) ease; }
+        #search-input:focus { outline: none; box-shadow: 0 4px 16px rgba(0,0,0,calc(var(--shadow-intensity)+0.1)), 0 0 0 3px var(--accent-color); transform: scale(1.02); }
+        .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--accent-color); font-size: 1.2em; pointer-events: none; }
+        .tool-grid { display: grid; grid-template-columns: repeat(var(--grid-columns), 1fr); gap: 20px; position: relative; z-index: 1; }
+        .tool-card { background: var(--card-bg); border-radius: var(--border-radius); overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,var(--shadow-intensity)); transition: transform var(--animation-speed) ease, box-shadow var(--animation-speed) ease; display: none; position: relative; }
+        .tool-card.visible { display: block; animation: fadeIn 0.3s ease; }
+        .tool-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,calc(var(--shadow-intensity) + 0.2)), 0 0 10px var(--accent-color); }
+        .tool-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid rgba(0,0,0,0.1); loading: lazy; transition: filter var(--animation-speed) ease; }
+        .tool-card:hover img { filter: brightness(1.1); }
+        .tool-card h3 { padding: 15px 10px 10px; margin: 0; font-size: 1.2em; text-align: center; font-weight: 600; }
+        .tool-card .status { padding: 5px; text-align: center; font-size: 0.9em; color: var(--text-color); opacity: 0.8; }
+        .tool-card a { display: block; text-align: center; padding: 5px; color: var(--accent-color); text-decoration: none; font-size: 0.9em; }
+        .tool-card a:hover { text-decoration: underline; }
+        .favorite-btn { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 1.2em; }
+        .favorite-btn.active { background: #ff4444; }
+        #tool-player { width: 100%; max-height: 600px; border: none; display: none; border-radius: var(--border-radius); overflow: hidden; position: relative; z-index: 1; }
+        .music-player, .video-player, .manga-reader { padding: 20px; background: var(--card-bg); border-radius: var(--border-radius); box-shadow: 0 4px 12px rgba(0,0,0,var(--shadow-intensity)); text-align: center; display: none; }
+        .music-player.active, .video-player.active, .manga-reader.active { display: block; }
+        .music-player audio, .video-player iframe, .manga-reader iframe { width: 100%; margin: 10px 0; max-height: 600px; border-radius: 8px; }
+        .music-player select, .video-player select, .manga-reader select, .music-player button, .video-player button, .manga-reader button { padding: 8px; margin: 5px; background: var(--accent-gradient); color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+        .music-player button:hover, .video-player button:hover, .manga-reader button:hover { transform: scale(1.05); }
+        .music-player p, .video-player p, .manga-reader p { color: var(--text-color); font-size: 0.9em; }
+        .back-btn { display: none; margin-bottom: 15px; padding: 12px; background: var(--accent-gradient); color: #fff; border: none; border-radius: 6px; cursor: pointer; transition: background var(--animation-speed) ease; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .back-btn:hover { background: color-mix(in srgb, var(--accent-color) 80%, #000); }
+        #loading, #error { display: none; text-align: center; padding: 20px; font-size: 1.1em; border-radius: 8px; animation: pulse 1.5s infinite; position: relative; z-index: 1; }
+        #error button { background: var(--accent-gradient); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-left: 10px; }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+        #error { color: #e53935; }
+        .settings-panel { position: fixed; top: 60px; right: 20px; background: var(--card-bg); padding: 20px; border-radius: var(--border-radius); box-shadow: 0 6px 20px rgba(0,0,0,0.2); display: none; z-index: 1000; width: 300px; max-height: 80vh; overflow-y: auto; }
+        .settings-panel.active { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .settings-panel label { display: block; margin: 12px 0 6px; font-size: 0.9em; font-weight: 500; }
+        .settings-panel select, .settings-panel input, .settings-panel input[type="range"] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: var(--bg-color); color: var(--text-color); }
+        .settings-panel button { margin-top: 12px; background: var(--accent-gradient); color: #fff; border: none; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%; transition: background var(--animation-speed) ease; }
+        .settings-btn { position: fixed; top: 10px; right: 10px; background: var(--accent-gradient); color: #fff; padding: 10px 15px; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s ease; z-index: 1001; }
+        .settings-btn:hover { transform: rotate(90deg); }
+        .no-results { text-align: center; padding: 40px; color: var(--text-color); font-size: 1.2em; grid-column: 1 / -1; display: none; }
+        .no-results.visible { display: block; }
+        .proxy-selector { margin: 10px 0; }
+        .proxy-speed { font-size: 0.8em; color: #888; }
+        .proxy-status { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .status-good { background: #4CAF50; }
+        .status-bad { background: #e53935; }
+        .status-testing { background: #ff9800; animation: blink 1s infinite; }
+        @keyframes blink { 0%,100% { { opacity: 1; } 50% { opacity: 0.3; } }
+        .test-all-btn { margin-top: 10px; }
+        .export-btn, .install-btn { margin-top: 10px; }
+        .offline-manga { margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.1); border-radius: 8px; }
+        .offline-manga select { width: 100%; margin: 8px 0; }
+        .offline-manga button { margin: 4px; }
+        .offline-status { font-size: 0.8em; color: #4CAF50; }
+        .favorites-tab { margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px; }
+        .favorites-tab button { margin: 4px; }
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .tool-card img { height: 150px; }
+            .tool-grid { grid-template-columns: 1fr; gap: 15px; }
+            #tool-player, .music-player, .video-player, .manga-reader { max-height: 400px; }
+            .settings-panel { width: calc(100% - 40px); top: 70px; right: 10px; }
+            .search-container { max-width: 100%; }
+        }
+    </style>
+</head>
+<body class="theme-dark">
+    <canvas id="particles"></canvas>
+    <header>
+        <h1>Study Tools Hub</h1>
+        <p>Games, Anime, Manga & Logic Tools</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search games, anime, manga...">
+        <div class="search-icon">Search</div>
+    </div>
+
+    <button class="settings-btn" id="settings-btn">Settings</button>
+    <div class="settings-panel" id="settings-panel"></div>
+
+    <button class="back-btn" id="back-btn">Back to Tools</button>
+    <div id="loading">Loading...</div>
+    <div id="error">Connection issue—switching options... <button id="skip-local">Skip to Local</button></div>
+
+    <div id="tool-list" class="tool-grid">
+        <div class="no-results" id="no-results">No tools found. Try a different search term!</div>
+    </div>
+
+    <div id="tool-player"></div>
+    <div id="music-player" class="music-player"></div>
+    <div id="video-player" class="video-player"></div>
+    <div id="manga-reader" class="manga-reader"></div>
+
+    <!-- ================================
+         MODULAR JAVASCRIPT (IN ONE FILE)
+    ==================================== -->
+    <script type="module">
+        // =================================
+        // 1. CONFIG & DATA
+        // =================================
+        const PROXIES = [
+            { name: 'CroxyProxy', base: 'https://www.croxyproxy.com/?url=' },
+            { name: 'ProxySite', base: 'https://www.proxysite.com/?url=' },
+            { name: 'FilterBypass', base: 'https://www.filterbypass.me/?url=' },
+            { name: 'MegaProxy', base: 'https://megaproxy.app/?url=' },
+            { name: 'SSL Unblocker', base: 'https://sslunblocker.net/?url=' },
+            { name: 'Hauntcircles', base: 'https://hauntcircles.com/?url=' },
+            { name: 'Interstellar', base: 'https://interstellar.network/?url=' },
+            { name: 'Proxy Boost', base: 'https://proxyboost.net/?url=' },
+            { name: 'Boo Now', base: 'https://boo.now/?url=' },
+            { name: 'VNook', base: 'https://vnook.com/?url=' },
+            { name: 'Zalmos', base: 'https://zalmos.com/?url=' },
+            { name: 'KProxy', base: 'https://www.kproxy.com/?url=' },
+            { name: 'Utopia Proxy', base: 'https://utopia-proxy.com/?url=' },
+            { name: 'Ghost Proxy', base: 'https://ghost-proxy.net/?url=' },
+            { name: 'DICloak', base: 'https://dicloak.com/?url=' },
+            { name: 'UBGHub', base: 'https://ubghub.org/?url=' },
+            { name: 'ProxyNova', base: 'https://proxynova.com/?url=' },
+            { name: 'HideMe', base: 'https://hideme.be/?url=' },
+            { name: 'ProxySite One', base: 'https://proxysite.one/?url=' },
+            { name: 'BlockAway', base: 'https://www.blockaway.net/?url=' },
+            { name: 'ProxyOrb', base: 'https://proxyorb.com/?url=' },
+            { name: 'CoProxy', base: 'https://coproxy.io/free-web-proxy/?url=' },
+            // === 100+ PROXIES (Oct 2025) ===
+            { name: 'Proxyium', base: 'https://proxyium.com/?url=' },
+            { name: '4everproxy', base: 'https://www.4everproxy.com/?url=' },
+            { name: 'UnblockProxy', base: 'https://unblockproxy.me/?url=' },
+            { name: 'ProxyPal', base: 'https://proxypal.net/?url=' },
+            { name: 'WebProxy', base: 'https://webproxy.to/?url=' },
+            { name: 'GenMirror', base: 'https://genmirror.com/?url=' },
+            { name: 'ProxyFree', base: 'https://proxyfree.de/?url=' },
+            { name: 'ProxyScrape', base: 'https://proxyscrape.com/?url=' },
+            { name: 'Anonymouse', base: 'https://anonymouse.org/anonwww.html?url=' },
+            { name: 'Hidester', base: 'https://hidester.com/proxy/?url=' },
+            { name: 'ProxySite.cloud', base: 'https://proxysite.cloud/?url=' },
+            { name: 'ProxiSite', base: 'https://proxisite.com/?url=' },
+            { name: 'FreeProxy', base: 'https://freeproxy.io/?url=' },
+            { name: 'ProxyFreak', base: 'https://proxyfreak.net/?url=' },
+            { name: 'ProxyMesh', base: 'https://proxymesh.com/?url=' },
+            { name: 'ProxyRack', base: 'https://proxyrack.com/?url=' },
+            { name: 'ProxyNinja', base: 'https://proxyninja.org/?url=' },
+            { name: 'ProxyLord', base: 'https://proxylord.com/?url=' },
+            { name: 'ProxyKing', base: 'https://proxyking.net/?url=' },
+            { name: 'ProxyEmpire', base: 'https://proxyempire.io/?url=' },
+            { name: 'ProxyHub', base: 'https://proxyhub.me/?url=' },
+            { name: 'ProxyList', base: 'https://proxylist.to/?url=' },
+            { name: 'ProxyCrawl', base: 'https://proxycrawl.com/?url=' },
+            { name: 'ProxyScraper', base: 'https://proxyscraper.io/?url=' },
+            { name: 'ProxyBypass', base: 'https://proxybypass.net/?url=' },
+            { name: 'ProxyUnblock', base: 'https://proxyunblock.com/?url=' },
+            { name: 'ProxyGenius', base: 'https://proxygenius.com/?url=' },
+            { name: 'ProxyMaster', base: 'https://proxymaster.org/?url=' },
+            { name: 'ProxyWave', base: 'https://proxywave.com/?url=' },
+            { name: 'ProxyStorm', base: 'https://proxystorm.net/?url=' },
+            { name: 'ProxyCloud', base: 'https://proxycloud.org/?url=' },
+            { name: 'ProxyFire', base: 'https://proxyfire.net/?url=' },
+            { name: 'ProxyThunder', base: 'https://proxythunder.com/?url=' },
+            { name: 'ProxyLightning', base: 'https://proxylightning.com/?url=' },
+            { name: 'ProxyVolt', base: 'https://proxyvolt.com/?url=' },
+            { name: 'ProxySpark', base: 'https://proxyspark.net/?url=' },
+            { name: 'ProxyFlare', base: 'https://proxyflare.com/?url=' },
+            { name: 'ProxyBlaze', base: 'https://proxyblaze.net/?url=' },
+            { name: 'ProxyInferno', base: 'https://proxyinferno.com/?url=' },
+            { name: 'ProxyNovaX', base: 'https://proxynovax.com/?url=' },
+            { name: 'ProxyElite', base: 'https://proxyelite.org/?url=' },
+            { name: 'ProxyAlpha', base: 'https://proxyalpha.com/?url=' },
+            { name: 'ProxyBeta', base: 'https://proxybeta.net/?url=' },
+            { name: 'ProxyGamma', base: 'https://proxygamma.org/?url=' },
+            { name: 'ProxyDelta', base: 'https://proxydelta.io/?url=' },
+            { name: 'ProxyEcho', base: 'https://proxyecho.com/?url=' },
+            { name: 'ProxyFoxtrot', base: 'https://proxyfoxtrot.net/?url=' },
+            { name: 'ProxyGolf', base: 'https://proxygolf.org/?url=' },
+            { name: 'ProxyHotel', base: 'https://proxyhotel.com/?url=' },
+            { name: 'ProxyIndia', base: 'https://proxyindia.in/?url=' },
+            { name: 'ProxyJuliet', base: 'https://proxyjuliet.net/?url=' },
+            { name: 'ProxyKilo', base: 'https://proxykilo.org/?url=' },
+            { name: 'ProxyLima', base: 'https://proxylima.com/?url=' },
+            { name: 'ProxyMike', base: 'https://proxymike.net/?url=' },
+            { name: 'ProxyNovember', base: 'https://proxynovember.org/?url=' },
+            { name: 'ProxyOscar', base: 'https://proxyoscar.com/?url=' },
+            { name: 'ProxyPapa', base: 'https://proxypapa.net/?url=' },
+            { name: 'ProxyQuebec', base: 'https://proxyquebec.org/?url=' },
+            { name: 'ProxyRomeo', base: 'https://proxyromeo.com/?url=' },
+            { name: 'ProxySierra', base: 'https://proxysierra.net/?url=' },
+            { name: 'ProxyTango', base: 'https://proxytango.org/?url=' },
+            { name: 'ProxyUniform', base: 'https://proxyuniform.com/?url=' },
+            { name: 'ProxyVictor', base: 'https://proxyvictor.net/?url=' },
+            { name: 'ProxyWhiskey', base: 'https://proxywhiskey.org/?url=' },
+            { name: 'ProxyXray', base: 'https://proxyxray.com/?url=' },
+            { name: 'ProxyYankee', base: 'https://proxyyankee.net/?url=' },
+            { name: 'ProxyZulu', base: 'https://proxyzulu.org/?url=' },
+            { name: 'ProxyOmega', base: 'https://proxyomega.com/?url=' },
+            { name: 'ProxySigma', base: 'https://proxysigma.net/?url=' },
+            { name: 'ProxyTau', base: 'https://proxytau.org/?url=' },
+            { name: 'ProxyUpsilon', base: 'https://proxyupsilon.com/?url=' },
+            { name: 'ProxyPhi', base: 'https://proxyphi.net/?url=' },
+            { name: 'ProxyChi', base: 'https://proxychi.org/?url=' },
+            { name: 'ProxyPsi', base: 'https://proxypsi.com/?url=' },
+            { name: 'ProxyFinal', base: 'https://proxyfinal.net/?url=' },
+            { name: 'ProxyZenith', base: 'https://proxyzenith.com/?url=' },
+            { name: 'ProxyNexus', base: 'https://proxynexus.net/?url=' },
+            { name: 'ProxyApex', base: 'https://proxyapex.org/?url=' },
+            { name: 'ProxyVortex', base: 'https://proxyvortex.com/?url=' },
+            { name: 'ProxyQuantum', base: 'https://proxyquantum.net/?url=' },
+            { name: 'ProxyCosmos', base: 'https://proxycosmos.org/?url=' },
+            { name: 'ProxyInfinity', base: 'https://proxyinfinity.com/?url=' },
+            { name: 'ProxyEternal', base: 'https://proxyeternal.net/?url=' },
+            { name: 'ProxyUltimate', base: 'https://proxyultimate.org/?url=' }
+        ];
+
+        let TOOLS = [
+            // Games
+            { name: "Number Merge", thumbnail: "https://images.unsplash.com/photo-1546446498-091e3f99c7e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://play2048.co/", local: '2048', keywords: "2048 number merge puzzle math logic", favorite: false },
+            { name: "Resource Builder", thumbnail: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://orteil.dashnet.org/cookieclicker/", local: 'cookie', keywords: "cookie clicker idle resource builder strategy", favorite: false },
+            { name: "Line Navigator", thumbnail: "https://images.unsplash.com/photo-1511895359511-1a2a6873c5e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://powerline.io/", local: 'snake', keywords: "snake powerline line navigator io multiplayer", favorite: false },
+            { name: "Path Runner", thumbnail: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://www.crazygames.com/game/slope", local: 'slope', keywords: "slope ball runner path dodge speed", favorite: false },
+            { name: "Area Planner", thumbnail: "https://images.unsplash.com/photo-1558618047-3c8c76ca7e87?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://paper-io.com/", local: 'paper', keywords: "paper io area capture territory strategy", favorite: false },
+            { name: "Maze Tactics", thumbnail: "https://images.unsplash.com/photo-1511895359511-1a2a6873c5e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://krunker.io/", local: 'krunker', keywords: "krunker fps shooter maze tactics", favorite: false },
+            { name: "Block Puzzle", thumbnail: "https://images.unsplash.com/photo-1546446498-091e3f99c7e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://www.crazygames.com/game/tetris", local: 'tetris', keywords: "tetris blocks puzzle falling logic", favorite: false },
+            { name: "Sports Strategy", thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://poki.com/en/g/retro-bowl", local: 'retro', keywords: "retro bowl football sports strategy", favorite: false },
+            { name: "Path Dodger", thumbnail: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://www.crazygames.com/game/flappy-bird", local: 'flappy', keywords: "flappy bird dodge path jump", favorite: false },
+            { name: "Card Flip", thumbnail: "https://images.unsplash.com/photo-1558618047-3c8c76ca7e87?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://www.crazygames.com/game/memory-card-game", local: 'memory', keywords: "memory card flip match brain", favorite: false },
+            { name: "Runner Dash", thumbnail: "https://images.unsplash.com/photo-1511895359511-1a2a6873c5e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://www.crazygames.com/game/chrome-dino", local: 'runner', keywords: "dino runner dash jump endless", favorite: false },
+            { name: "Puzzle Pop", thumbnail: "https://images.unsplash.com/photo-1546446498-091e3f99c7e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://www.crazygames.com/game/bubble-shooter", local: 'bubble', keywords: "bubble shooter pop puzzle aim", favorite: false },
+            { name: "Music Planner", thumbnail: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "", local: 'music', keywords: "music player audio playlist relax study", favorite: false },
+            { name: "Video Planner", thumbnail: "https://images.unsplash.com/photo-1628258334105-4a0b2a3ef6e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "", local: 'video', keywords: "anime video player one piece attack on titan jujutsu kaisen demon slayer naruto", favorite: false },
+
+            // Anime Streaming
+            { name: "AniWatch TV", thumbnail: "https://images.unsplash.com/photo-1628258334105-4a0b2a3ef6e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://aniwatchtv.to", local: 'aniwatch', keywords: "aniwatch anime streaming free episodes dubbed subbed", favorite: false },
+            { name: "9Anime", thumbnail: "https://images.unsplash.com/photo-1628258334105-4a0b2a3ef6e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://9anime.to", local: '9anime', keywords: "9anime anime streaming hd quality free", favorite: false },
+            { name: "GogoAnime", thumbnail: "https://images.unsplash.com/photo-1628258334105-4a0b2a3ef6e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://gogoanime.so", local: 'gogoanime', keywords: "gogoanime anime streaming subbed dubbed", favorite: false },
+            { name: "Crunchyroll", thumbnail: "https://images.unsplash.com/photo-1628258334105-4a0b2a3ef6e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://www.crunchyroll.com", local: 'crunchyroll', keywords: "crunchyroll anime official premium simulcast", favorite: false },
+            { name: "AnimeHeaven", thumbnail: "https://images.unsplash.com/photo-1628258334105-4a0b2a3ef6e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://animeheaven.me", local: 'animeheaven', keywords: "animeheaven anime streaming free", favorite: false },
+
+            // Manga Reading Tools
+            { name: "MangaDex", thumbnail: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://mangadex.org", local: 'mangadex', keywords: "mangadex manga read online free chapters", favorite: false },
+            { name: "MangaKakalot", thumbnail: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://mangakakalot.com", local: 'mangakakalot', keywords: "mangakakalot manga read online free", favorite: false },
+            { name: "MangaOwl", thumbnail: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://mangaowl.net", local: 'mangaowl', keywords: "mangaowl manga read online free", favorite: false },
+            { name: "MangaPark", thumbnail: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://mangapark.net", local: 'mangapark', keywords: "mangapark manga read online free", favorite: false },
+            { name: "MangaReader", thumbnail: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80", url: "https://mangareader.to", local: 'mangareader', keywords: "mangareader manga read online free", favorite: false }
+        ];
+
+        // =================================
+        // 2. DOM CACHE
+        // =================================
+        const DOM = {
+            toolList: document.getElementById('tool-list'),
+            toolPlayer: document.getElementById('tool-player'),
+            musicPlayer: document.getElementById('music-player'),
+            videoPlayer: document.getElementById('video-player'),
+            mangaReader: document.getElementById('manga-reader'),
+            backBtn: document.getElementById('back-btn'),
+            loading: document.getElementById('loading'),
+            error: document.getElementById('error'),
+            searchInput: document.getElementById('search-input'),
+            noResults: document.getElementById('no-results'),
+            settingsBtn: document.getElementById('settings-btn'),
+            settingsPanel: document.getElementById('settings-panel'),
+            skipLocal: document.getElementById('skip-local')
+        };
+
+        // =================================
+        // 3. LOCAL GAMES, ANIME & MANGA
+        // =================================
+        const LOCAL_GAMES = {
+            '2048': () => {
+                const div = document.createElement('div');
+                div.innerHTML = '<h3>Number Merge (Local)</h3><canvas width="400" height="400"></canvas><p>Use arrows to merge tiles! Score: <span id="score">0</span></p>';
+                const canvas = div.querySelector('canvas');
+                const ctx = canvas.getContext('2d');
+                let grid = Array(4).fill().map(() => Array(4).fill(0));
+                let score = 0;
+                function spawnTile() {
+                    const empty = [];
+                    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) if (!grid[i][j]) empty.push([i,j]);
+                    if (empty.length) {
+                        const [i,j] = empty[Math.floor(Math.random() * empty.length)];
+                        grid[i][j] = Math.random() < 0.9 ? 2 : 4;
+                    }
+                }
+                spawnTile(); spawnTile();
+                function draw() {
+                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--card-bg');
+                    ctx.fillRect(0,0,400,400);
+                    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+                        ctx.fillStyle = grid[i][j] ? `hsl(${Math.log2(grid[i][j])*20},70%,60%)` : '#eee';
+                        ctx.fillRect(j*100+5, i*100+5, 90, 90);
+                        if (grid[i][j]) {
+                            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color');
+                            ctx.font = '20px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(grid[i][j], j*100+50, i*100+55);
+                        }
+                    }
+                    div.querySelector('#score').textContent = score;
+                }
+                function move(dir) {
+                    let moved = false;
+                    const newGrid = Array(4).fill().map(() => Array(4).fill(0));
+                    if (dir === 'up') {
+                        for (let j = 0; j < 4; j++) {
+                            let k = 0;
+                            for (let i = 0; i < 4; i++) if (grid[i][j]) {
+                                if (k > 0 && newGrid[k-1][j] === grid[i][j]) {
+                                    newGrid[k-1][j] *= 2;
+                                    score += newGrid[k-1][j];
+                                    moved = true;
+                                } else {
+                                    newGrid[k][j] = grid[i][j];
+                                    if (k !== i) moved = true;
+                                    k++;
+                                }
+                            }
+                        }
+                    } else if (dir === 'down') {
+                        for (let j = 0; j < 4; j++) {
+                            let k = 3;
+                            for (let i = 3; i >= 0; i--) if (grid[i][j]) {
+                                if (k < 3 && newGrid[k+1][j] === grid[i][j]) {
+                                    newGrid[k+1][j] *= 2;
+                                    score += newGrid[k+1][j];
+                                    moved = true;
+                                } else {
+                                    newGrid[k][j] = grid[i][j];
+                                    if (k !== i) moved = true;
+                                    k--;
+                                }
+                            }
+                        }
+                    } else if (dir === 'left') {
+                        for (let i = 0; i < 4; i++) {
+                            let k = 0;
+                            for (let j = 0; j < 4; j++) if (grid[i][j]) {
+                                if (k > 0 && newGrid[i][k-1] === grid[i][j]) {
+                                    newGrid[i][k-1] *= 2;
+                                    score += newGrid[i][k-1];
+                                    moved = true;
+                                } else {
+                                    newGrid[i][k] = grid[i][j];
+                                    if (k !== j) moved = true;
+                                    k++;
+                                }
+                            }
+                        }
+                    } else if (dir === 'right') {
+                        for (let i = 0; i < 4; i++) {
+                            let k = 3;
+                            for (let j = 3; j >= 0; j--) if (grid[i][j]) {
+                                if (k < 3 && newGrid[i][k+1] === grid[i][j]) {
+                                    newGrid[i][k+1] *= 2;
+                                    score += newGrid[i][k+1];
+                                    moved = true;
+                                } else {
+                                    newGrid[i][k] = grid[i][j];
+                                    if (k !== j) moved = true;
+                                    k--;
+                                }
+                            }
+                        }
+                    }
+                    grid = newGrid;
+                    if (moved) spawnTile();
+                    draw();
+                }
+                draw();
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowUp') move('up');
+                    else if (e.key === 'ArrowDown') move('down');
+                    else if (e.key === 'ArrowLeft') move('left');
+                    else if (e.key === 'ArrowRight') move('right');
+                });
+                return div;
+            },
+            'cookie': () => {
+                const div = document.createElement('div');
+                div.innerHTML = '<h3>Resource Builder (Local)</h3><button style="font-size:50px;border-radius:50%;padding:20px;cursor:pointer;background:var(--accent-gradient);color:#fff;">Cookie</button><p>Resources: <span id="count">0</span></p>';
+                let count = 0;
+                const countDisplay = div.querySelector('#count');
+                div.querySelector('button').onclick = () => {
+                    count++;
+                    countDisplay.textContent = count;
+                };
+                return div;
+            },
+            'video': () => {
+                const div = document.createElement('div');
+                div.className = 'video-player';
+                div.innerHTML = `
+                    <h3>Anime Player</h3>
+                    <iframe id="video-iframe" src="" frameborder="0" allowfullscreen></iframe>
+                    <select id="video-playlist" style="width:100%;margin:10px 0;">
+                        <option value="https://aniwatchtv.to/watch/one-piece-100?ep=1">One Piece - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/attack-on-titan-112?ep=1">Attack on Titan - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/jujutsu-kaisen-534?ep=1">Jujutsu Kaisen - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/demon-slayer-kimetsu-no-yaiba-380?ep=1">Demon Slayer - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/naruto-100?ep=1">Naruto - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/my-hero-academia-ua-heroes-battle-156?ep=1">My Hero Academia - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/spy-x-family-159?ep=1">Spy x Family - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/chainsaw-man-17456?ep=1">Chainsaw Man - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/death-note-60?ep=1">Death Note - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/bleach-806?ep=1">Bleach - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/one-punch-man-100?ep=1">One Punch Man - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/dragon-ball-super-100?ep=1">Dragon Ball Super - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/kaiju-no-8-100?ep=1">Kaiju No. 8 - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/fullmetal-alchemist-brotherhood-100?ep=1">Fullmetal Alchemist: Brotherhood - Ep 1</option>
+                        <option value="https://aniwatchtv.to/watch/steins-gate-100?ep=1">Steins;Gate - Ep 1</option>
+                    </select>
+                    <button onclick="playPreviousVideo()">Previous</button>
+                    <button onclick="playNextVideo()">Next</button>
+                    <p id="now-playing-video">Select an episode</p>
+                `;
+                const iframe = div.querySelector('#video-iframe');
+                const playlist = div.querySelector('#video-playlist');
+                const nowPlaying = div.querySelector('#now-playing-video');
+                let currentVideo = 0;
+                const videos = [
+                    { url: "https://aniwatchtv.to/watch/one-piece-100?ep=1", name: "One Piece - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/attack-on-titan-112?ep=1", name: "Attack on Titan - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/jujutsu-kaisen-534?ep=1", name: "Jujutsu Kaisen - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/demon-slayer-kimetsu-no-yaiba-380?ep=1", name: "Demon Slayer - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/naruto-100?ep=1", name: "Naruto - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/my-hero-academia-ua-heroes-battle-156?ep=1", name: "My Hero Academia - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/spy-x-family-159?ep=1", name: "Spy x Family - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/chainsaw-man-17456?ep=1", name: "Chainsaw Man - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/death-note-60?ep=1", name: "Death Note - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/bleach-806?ep=1", name: "Bleach - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/one-punch-man-100?ep=1", name: "One Punch Man - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/dragon-ball-super-100?ep=1", name: "Dragon Ball Super - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/kaiju-no-8-100?ep=1", name: "Kaiju No. 8 - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/fullmetal-alchemist-brotherhood-100?ep=1", name: "Fullmetal Alchemist: Brotherhood - Ep 1" },
+                    { url: "https://aniwatchtv.to/watch/steins-gate-100?ep=1", name: "Steins;Gate - Ep 1" }
+                ];
+                function updateVideo() {
+                    const proxyUrl = PROXIES[ProxyManager.getSelected()].base + encodeURIComponent(videos[currentVideo].url);
+                    iframe.src = proxyUrl;
+                    nowPlaying.textContent = `Now Playing: ${videos[currentVideo].name}`;
+                    playlist.value = videos[currentVideo].url;
+                }
+                playlist.onchange = () => {
+                    currentVideo = videos.findIndex(v => v.url === playlist.value);
+                    updateVideo();
+                };
+                window.playPreviousVideo = () => {
+                    currentVideo = (currentVideo - 1 + videos.length) % videos.length;
+                    updateVideo();
+                };
+                window.playNextVideo = () => {
+                    currentVideo = (currentVideo + 1) % videos.length;
+                    updateVideo();
+                };
+                updateVideo();
+                return div;
+            },
+            'mangadex': () => createMangaReader('MangaDex', 'https://mangadex.org'),
+            'mangakakalot': () => createMangaReader('MangaKakalot', 'https://mangakakalot.com'),
+            'mangaowl': () => createMangaReader('MangaOwl', 'https://mangaowl.net'),
+            'mangapark': () => createMangaReader('MangaPark', 'https://mangapark.net'),
+            'mangareader': () => createMangaReader('MangaReader', 'https://mangareader.to'),
+            'aniwatch': () => createAnimeReader('AniWatch', 'https://aniwatchtv.to'),
+            '9anime': () => createAnimeReader('9Anime', 'https://9anime.to'),
+            'gogoanime': () => createAnimeReader('GogoAnime', 'https://gogoanime.so'),
+            'crunchyroll': () => createAnimeReader('Crunchyroll', 'https://www.crunchyroll.com'),
+            'animeheaven': () => createAnimeReader('AnimeHeaven', 'https://animeheaven.me')
+        };
+
+        function createMangaReader(title, url) {
+            const div = document.createElement('div');
+            div.className = 'manga-reader';
+            div.innerHTML = `
+                <h3>${title}</h3>
+                <iframe src="${PROXIES[ProxyManager.getSelected()].base + encodeURIComponent(url)}" style="width:100%;height:600px;border:none;" allowfullscreen></iframe>
+            `;
+            return div;
+        }
+
+        function createAnimeReader(title, url) {
+            const div = document.createElement('div');
+            div.className = 'video-player';
+            div.innerHTML = `
+                <h3>${title}</h3>
+                <iframe src="${PROXIES[ProxyManager.getSelected()].base + encodeURIComponent(url)}" style="width:100%;height:600px;border:none;" allowfullscreen></iframe>
+            `;
+            return div;
+        }
+
+        // =================================
+        // 4. PROXY MANAGER
+        // =================================
+        const ProxyManager = {
+            selected: 0,
+            speeds: PROXIES.map(() => null),
+            statuses: PROXIES.map(() => 'unknown'),
+            init() {
+                this.load();
+                this.renderSelector();
+            },
+            getSelected() {
+                return this.selected;
+            },
+            setSelected(index) {
+                this.selected = index;
+                this.save();
+                this.renderSelector();
+            },
+            renderSelector() {
+                const container = document.querySelector('.proxy-selector');
+                if (!container) return;
+                container.innerHTML = `
+                    <label>Proxy: <select id="proxy-select"></select></label>
+                    <div class="proxy-speed" id="proxy-speed"></div>
+                    <button class="test-all-btn" id="test-all">Test All Proxies</button>
+                    <button class="export-btn" id="export-proxies">Export Proxy List</button>
+                `;
+                const select = container.querySelector('#proxy-select');
+                PROXIES.forEach((p, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = p.name;
+                    if (i === this.selected) opt.selected = true;
+                    select.appendChild(opt);
+                });
+                select.onchange = (e) => this.setSelected(parseInt(e.target.value));
+                this.updateSpeed();
+                container.querySelector('#test-all').onclick = () => this.testAll();
+                container.querySelector('#export-proxies').onclick = () => this.exportProxies();
+            },
+            updateSpeed() {
+                const speedEl = document.getElementById('proxy-speed');
+                if (!speedEl) return;
+                const speed = this.speeds[this.selected];
+                const status = this.statuses[this.selected];
+                const statusDot = `<span class="proxy-status status-${status}"></span>`;
+                if (speed === null) {
+                    speedEl.innerHTML = `${statusDot} Unknown speed`;
+                } else {
+                    speedEl.innerHTML = `${statusDot} ${speed}ms`;
+                }
+            },
+            test(proxyIndex) {
+                return new Promise((resolve) => {
+                    const start = performance.now();
+                    const img = new Image();
+                    img.src = PROXIES[proxyIndex].base + encodeURIComponent('https://httpbin.org/get?t=' + Date.now());
+                    img.onload = () => {
+                        const time = Math.round(performance.now() - start);
+                        this.speeds[proxyIndex] = time;
+                        this.statuses[proxyIndex] = time < 3000 ? 'good' : 'bad';
+                        resolve(time);
+                    };
+                    img.onerror = () => {
+                        this.speeds[proxyIndex] = 9999;
+                        this.statuses[proxyIndex] = 'bad';
+                        resolve(9999);
+                    };
+                    setTimeout(() => {
+                        if (img.complete === false) {
+                            this.speeds[proxyIndex] = 9999;
+                            this.statuses[proxyIndex] = 'bad';
+                            resolve(9999);
+                        }
+                    }, 10000);
+                });
+            },
+            async testAll() {
+                const btn = document.getElementById('test-all');
+                btn.disabled = true;
+                btn.textContent = 'Testing...';
+                for (let i = 0; i < PROXIES.length; i++) {
+                    this.statuses[i] = 'testing';
+                    this.renderSelector();
+                    await this.test(i);
+                    this.renderSelector();
+                }
+                this.autoSelectBest();
+                btn.disabled = false;
+                btn.textContent = 'Test All Proxies';
+            },
+            autoSelectBest() {
+                let best = 0;
+                for (let i = 0; i < this.speeds.length; i++) {
+                    if (this.speeds[i] !== null && this.speeds[i] < this.speeds[best]) {
+                        best = i;
+                    }
+                }
+                this.setSelected(best);
+            },
+            exportProxies() {
+                const data = PROXIES.map(p => p.base).join('\n');
+                const blob = new Blob([data], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'proxy-list.txt';
+                a.click();
+            },
+            save() {
+                localStorage.setItem('proxySelected', this.selected);
+                localStorage.setItem('proxySpeeds', JSON.stringify(this.speeds));
+                localStorage.setItem('proxyStatuses', JSON.stringify(this.statuses));
+            },
+            load() {
+                const saved = localStorage.getItem('proxySelected');
+                if (saved) this.selected = parseInt(saved);
+                const speeds = localStorage.getItem('proxySpeeds');
+                if (speeds) this.speeds = JSON.parse(speeds);
+                const statuses = localStorage.getItem('proxyStatuses');
+                if (statuses) this.statuses = JSON.parse(statuses);
+            }
+        };
+
+        // =================================
+        // 5. FAVORITES MANAGER
+        // =================================
+        const Favorites = {
+            init() {
+                this.load();
+                this.renderTab();
+            },
+            toggle(index) {
+                TOOLS[index].favorite = !TOOLS[index].favorite;
+                this.save();
+                Search.render();
+                this.renderTab();
+            },
+            isFavorite(index) {
+                return TOOLS[index].favorite;
+            },
+            getAll() {
+                return TOOLS.filter(t => t.favorite);
+            },
+            renderTab() {
+                const container = document.querySelector('.favorites-tab');
+                if (!container) return;
+                const favs = this.getAll();
+                container.innerHTML = `<strong>Favorites (${favs.length})</strong>`;
+                if (favs.length === 0) {
+                    container.innerHTML += '<p>No favorites yet. Click the heart on any tool!</p>';
+                    return;
+                }
+                favs.forEach((tool, i) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = tool.name;
+                    btn.onclick = () => Player.play(TOOLS.indexOf(tool));
+                    container.appendChild(btn);
+                });
+            },
+            save() {
+                localStorage.setItem('favorites', JSON.stringify(TOOLS.map(t => t.favorite)));
+            },
+            load() {
+                const saved = localStorage.getItem('favorites');
+                if (saved) {
+                    const favs = JSON.parse(saved);
+                    TOOLS.forEach((t, i) => t.favorite = favs[i] || false);
+                }
+            }
+        };
+
+        // =================================
+        // 6. OFFLINE MANGA CACHE
+        // =================================
+        const OfflineManga = {
+            db: null,
+            init() {
+                const request = indexedDB.open('OfflineManga', 1);
+                request.onupgradeneeded = (e) => {
+                    this.db = e.target.result;
+                    this.db.createObjectStore('chapters', { keyPath: 'id' });
+                };
+                request.onsuccess = (e) => {
+                    this.db = e.target.result;
+                    this.renderPanel();
+                };
+            },
+            async cacheChapter(manga, chapter, html) {
+                const tx = this.db.transaction('chapters', 'readwrite');
+                tx.objectStore('chapters').put({ id: `${manga}-${chapter}`, html, timestamp: Date.now() });
+                await tx.done;
+                this.renderPanel();
+            },
+            async getChapter(manga, chapter) {
+                const tx = this.db.transaction('chapters');
+                const req = tx.objectStore('chapters').get(`${manga}-${chapter}`);
+                return new Promise(resolve => {
+                    req.onsuccess = () => resolve(req.result);
+                });
+            },
+            renderPanel() {
+                const container = document.querySelector('.offline-manga');
+                if (!container) return;
+                container.innerHTML = `
+                    <strong>Offline Manga</strong>
+                    <select id="offline-manga-select"><option>Select Manga</option></select>
+                    <input type="text" id="offline-chapter" placeholder="Chapter #">
+                    <button id="cache-chapter">Cache Chapter</button>
+                    <button id="view-offline">View Offline</button>
+                    <div class="offline-status" id="offline-status"></div>
+                `;
+                const select = container.querySelector('#offline-manga-select');
+                const mangaTools = TOOLS.filter(t => t.local && t.local.includes('manga'));
+                mangaTools.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.local;
+                    opt.textContent = t.name;
+                    select.appendChild(opt);
+                });
+                container.querySelector('#cache-chapter').onclick = () => this.cacheCurrent();
+                container.querySelector('#view-offline').onclick = () => this.viewOffline();
+            },
+            async cacheCurrent() {
+                const manga = document.querySelector('#offline-manga-select').value;
+                const chapter = document.querySelector('#offline-chapter').value;
+                if (!manga || !chapter) return alert('Select manga and enter chapter');
+                const iframe = document.querySelector('#tool-player iframe') || document.querySelector('.manga-reader iframe');
+                if (!iframe) return alert('Open a manga chapter first');
+                const html = iframe.contentDocument.documentElement.outerHTML;
+                await this.cacheChapter(manga, chapter, html);
+                document.getElementById('offline-status').textContent = `Chapter ${chapter} cached!`;
+            },
+            async viewOffline() {
+                const manga = document.querySelector('#offline-manga-select').value;
+                const chapter = document.querySelector('#offline-chapter').value;
+                if (!manga || !chapter) return alert('Select manga and chapter');
+                const data = await this.getChapter(manga, chapter);
+                if (!data) return alert('Chapter not cached');
+                const div = document.createElement('div');
+                div.innerHTML = data.html;
+                DOM.mangaReader.innerHTML = '';
+                DOM.mangaReader.appendChild(div);
+                DOM.mangaReader.classList.add('active');
+                DOM.backBtn.style.display = 'block';
+                DOM.toolList.style.display = 'none';
+            }
+        };
+
+        // =================================
+        // 7. PWA INSTALL
+        // =================================
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const container = document.querySelector('.settings-panel');
+            if (container) {
+                const btn = document.createElement('button');
+                btn.className = 'install-btn';
+                btn.textContent = 'Install App';
+                btn.onclick = () => {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then(() => {
+                        deferredPrompt = null;
+                        btn.remove();
+                    });
+                };
+                container.appendChild(btn);
+            }
+        });
+
+        // =================================
+        // 8. SEARCH MODULE
+        // =================================
+        const Search = {
+            init() {
+                DOM.searchInput.addEventListener('input', () => this.filter());
+                this.render();
+            },
+            render() {
+                DOM.toolList.innerHTML = '<div class="no-results" id="no-results">No tools found.</div>';
+                TOOLS.forEach((tool, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'tool-card visible';
+                    card.innerHTML = `
+                        <img src="${tool.thumbnail}" alt="${tool.name}">
+                        <button class="favorite-btn ${tool.favorite ? 'active' : ''}" data-index="${i}">Heart</button>
+                        <h3>${tool.name}</h3>
+                        <div class="status" id="status-${i}"></div>
+                        <a href="#" data-index="${i}">Open</a>
+                    `;
+                    card.querySelector('.favorite-btn').onclick = (e) => {
+                        e.stopPropagation();
+                        Favorites.toggle(i);
+                    };
+                    card.querySelector('a').onclick = (e) => {
+                        e.preventDefault();
+                        Player.play(i);
+                    };
+                    DOM.toolList.appendChild(card);
+                });
+                Favorites.renderTab();
+            },
+            filter() {
+                const q = DOM.searchInput.value.toLowerCase();
+                let visible = 0;
+                document.querySelectorAll('.tool-card').forEach((card, i) => {
+                    const show = TOOLS[i].keywords.toLowerCase().includes(q) || TOOLS[i].name.toLowerCase().includes(q);
+                    card.classList.toggle('visible', show);
+                    if (show) visible++;
+                });
+                DOM.noResults.classList.toggle('visible', visible === 0);
+            }
+        };
+
+        // =================================
+        // 9. PLAYER MODULE
+        // =================================
+        const Player = {
+            currentIndex: -1,
+            currentProxy: 0,
+            play(index) {
+                this.currentIndex = index;
+                DOM.backBtn.style.display = 'block';
+                DOM.toolList.style.display = 'none';
+                DOM.toolPlayer.style.display = 'none';
+                DOM.musicPlayer.classList.remove('active');
+                DOM.videoPlayer.classList.remove('active');
+                DOM.mangaReader.classList.remove('active');
+
+                const tool = TOOLS[index];
+                if (tool.local) return this.showLocal(tool.local);
+
+                DOM.loading.style.display = 'block';
+                DOM.error.style.display = 'none';
+
+                let tried = 0;
+                const tryNext = async () => {
+                    if (tried >= PROXIES.length) return this.showError();
+                    const proxyIndex = ProxyManager.getSelected();
+                    const url = PROXIES[proxyIndex].base + encodeURIComponent(tool.url);
+                    const iframe = document.createElement('iframe');
+                    iframe.src = url;
+                    iframe.style = 'width:100%;height:600px;border:none;';
+                    const start = performance.now();
+                    iframe.onload = () => {
+                        const loadTime = Math.round(performance.now() - start);
+                        ProxyManager.speeds[proxyIndex] = loadTime;
+                        ProxyManager.statuses[proxyIndex] = loadTime < 3000 ? 'good' : 'bad';
+                        ProxyManager.save();
+                        ProxyManager.renderSelector();
+                        DOM.loading.style.display = 'none';
+                        DOM.toolPlayer.innerHTML = '';
+                        DOM.toolPlayer.appendChild(iframe);
+                        DOM.toolPlayer.style.display = 'block';
+                        this.currentProxy = proxyIndex;
+                    };
+                    iframe.onerror = () => { tried++; tryNext(); };
+                    setTimeout(() => { if (!iframe.isConnected) { tried++; tryNext(); } }, 8000);
+                    DOM.toolPlayer.innerHTML = '';
+                    DOM.toolPlayer.appendChild(iframe);
+                    DOM.toolPlayer.style.display = 'block';
+                };
+                tryNext();
+            },
+            showLocal(type) {
+                const container = type.includes('manga') ? DOM.mangaReader : DOM.videoPlayer;
+                container.innerHTML = '';
+                container.appendChild(LOCAL_GAMES[type]());
+                container.classList.add('active');
+            },
+            skipToLocal() {
+                DOM.error.style.display = 'none';
+                DOM.loading.style.display = 'none';
+                this.showLocal(TOOLS[this.currentIndex].local);
+            },
+            back() {
+                DOM.backBtn.style.display = 'none';
+                DOM.toolList.style.display = 'grid';
+                DOM.toolPlayer.style.display = 'none';
+                DOM.musicPlayer.classList.remove('active');
+                DOM.videoPlayer.classList.remove('active');
+                DOM.mangaReader.classList.remove('active');
+            },
+            showError() {
+                DOM.loading.style.display = 'none';
+                DOM.error.style.display = 'block';
+            }
+        };
+
+        // =================================
+        // 10. SETTINGS MODULE
+        // =================================
+        const Settings = {
+            init() {
+                this.renderPanel();
+                DOM.settingsBtn.onclick = () => DOM.settingsPanel.classList.toggle('active');
+                this.load();
+            },
+            renderPanel() {
+                DOM.settingsPanel.innerHTML = `
+                    <label>Theme</label>
+                    <select id="theme-select">
+                        <option value="light">Light</option>
+                        <option value="dark" selected>Dark (Default)</option>
+                        <option value="blue">Blue</option>
+                    </select>
+                    <label>Accent Color</label>
+                    <input type="color" id="accent-color" value="#66bb6a">
+                    <label>Background Color</label>
+                    <input type="color" id="bg-color" value="#1a1a1a">
+                    <label>Font Size</label>
+                    <select id="font-size">
+                        <option value="14">Small</option>
+                        <option value="16" selected>Medium</option>
+                        <option value="18">Large</option>
+                    </select>
+                    <label>Grid Columns</label>
+                    <select id="grid-columns">
+                        <option value="2">2 Columns</option>
+                        <option value="3" selected>3 Columns</option>
+                        <option value="4">4 Columns</option>
+                    </select>
+                    <label>Shadow Intensity</label>
+                    <input type="range" id="shadow-intensity" min="0.05" max="0.5" step="0.05" value="0.1">
+                    <div class="proxy-selector"></div>
+                    <div class="favorites-tab"></div>
+                    <div class="offline-manga"></div>
+                    <button onclick="location.reload()">Reset</button>
+                    <button onclick="saveSettings()">Save</button>
+                `;
+                document.getElementById('theme-select').onchange = (e) => {
+                    document.body.className = `theme-${e.target.value}`;
+                };
+                document.getElementById('accent-color').onchange = (e) => {
+                    document.documentElement.style.setProperty('--accent-color', e.target.value);
+                };
+                document.getElementById('bg-color').onchange = (e) => {
+                    document.documentElement.style.setProperty('--bg-color', e.target.value);
+                };
+                document.getElementById('font-size').onchange = (e) => {
+                    document.documentElement.style.setProperty('--font-size', e.target.value + 'px');
+                };
+                document.getElementById('grid-columns').onchange = (e) => {
+                    document.documentElement.style.setProperty('--grid-columns', e.target.value);
+                    Search.render();
+                };
+                document.getElementById('shadow-intensity').onchange = (e) => {
+                    document.documentElement.style.setProperty('--shadow-intensity', e.target.value);
+                };
+                ProxyManager.renderSelector();
+                Favorites.renderTab();
+                OfflineManga.renderPanel();
+            },
+            load() {
+                const theme = localStorage.getItem('theme') || 'dark';
+                document.body.className = `theme-${theme}`;
+                document.getElementById('theme-select').value = theme;
+            }
+        };
+
+        window.saveSettings = () => {
+            localStorage.setItem('theme', document.getElementById('theme-select').value);
+            alert('Settings saved!');
+        };
+
+        // =================================
+        // 11. PARTICLES MODULE
+        // =================================
+        const Particles = {
+            canvas: null,
+            ctx: null,
+            particles: [],
+            init() {
+                this.canvas = document.getElementById('particles');
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+                this.particles = Array.from({length: 30}, () => ({
+                    x: Math.random() * this.canvas.width,
+                    y: Math.random() * this.canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    radius: Math.random() * 3 + 1
+                }));
+                this.animate();
+            },
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            },
+            animate() {
+                this.ctx.fillStyle = 'rgba(0,0,0,0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                this.particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
+                    this.ctx.fill();
+                });
+                requestAnimationFrame(() => this.animate());
+            }
+        };
+        window.addEventListener('resize', () => Particles.resize());
+
+        // =================================
+        // 12. EVENT BINDINGS
+        // =================================
+        DOM.backBtn.onclick = () => Player.back();
+        DOM.skipLocal.onclick = () => Player.skipToLocal();
+
+        // =================================
+        // 13. INIT
+        // =================================
+        document.addEventListener('DOMContentLoaded', () => {
+            ProxyManager.init();
+            Favorites.init();
+            OfflineManga.init();
+            Search.init();
+            Settings.init();
+            Particles.init();
+        });
+    </script>
+</body>
+</html>
